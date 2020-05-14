@@ -117,31 +117,10 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
-        q = Queue()
-        q.enqueue(starting_vertex)
-
-        path = [starting_vertex]
-
-        # Keep track of visited nodes
-        visited = set()
-
-        # Repeat until queue is empty
-        while q.size() > 0:
-
-            # Dequeue first vert
-            v = q.dequeue()
-
-            # If it's not visited:
-            if v not in visited:
-                print(v)
-
-                # Mark visited
-                visited.add(v)
-                for next_vert in self.get_neighbors(v):
-                    q.enqueue(next_vert)
 
 
-def dfs(self, starting_vertex, destination_vertex):
+
+    def dfs(self, starting_vertex, destination_vertex):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
