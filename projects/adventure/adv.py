@@ -58,10 +58,6 @@ class Path_Builder:
 
     def move(self, direction):
         new_room = self.current_room.get_room_in_direction(direction)
-        print(direction)
-        print(self.current_room.name)
-        print(self.current_room.get_exits())
-        print(len(self.path))
         self.current_room = new_room
         player.travel(direction)
         self.path.append(direction)
@@ -70,32 +66,33 @@ class Path_Builder:
         # Add starting room options
         exits = self.starting_room.get_exits()
         for e in exits:
-            self.direction_stack.push(e)
-
+            self.direction_stack.push((e, "Forward"))
+        self.visited.add(self.current_room)
         # Repeat until stack is empty
         while self.direction_stack.size() > 0:
-            direction = self.direction_stack.pop()
-            self.move(direction)
+            if len(self.visited) == len(world.rooms):
+                return
+            direction_info = self.direction_stack.pop()
 
-            # If it's not visited:
-            if self.current_room not in self.visited:
-                # Mark visited
-                self.visited.add(self.current_room)
-                # Add to stack in order with backwards first
-                self.add_directions(direction)
+            if direction_info[1] is "Forward":
+                if self.current_room.get_room_in_direction(direction_info[0]) not in self.visited:
+                    self.move(direction_info[0])
+                    # Mark visited
+                    self.visited.add(self.current_room)
+                    # Add to stack in order with backwards first
+                    self.add_directions(direction_info[0])
+            elif direction_info[1] is "Back":
+                self.move(direction_info[0])
 
     def add_directions(self, last_direction):
         # Add backwards direction first
-        self.direction_stack.push(opposite(last_direction))
+        self.direction_stack.push((opposite(last_direction), "Back"))
         available_directions = self.current_room.get_exits()
-        # print(self.current_room.name)
-        # print(available_directions)
         # Add the rest
         for available_direction in available_directions:
             room = self.current_room.get_room_in_direction(available_direction)
             if room not in self.visited:
-                self.direction_stack.push(available_direction)
-
+                self.direction_stack.push((available_direction, "Forward"))
 
 
 path_builder = Path_Builder(world.starting_room)
